@@ -1,39 +1,24 @@
-import React, { useState } from "react";
-import { Todo } from "./Todo";
-import "../styles/App.css";
+import React, { useRef } from "react"
 
-const AddTodo = ({ dispatch, state }) => {
-  const [text, setText] = useState("");
+const AddTodo = ({ dispatch }) => {
+    const inpRef = useRef();
+    const handleSubmit = (e)=> {
+        e.preventDefault();
+        let title = inpRef.current.value;
+        if(!title) return;
+        let id = Date.now();
+        console.log(title,id);
+        dispatch({type : 'addTodo', obj: {title,id}})
+        inpRef.current.value = '';
+    }
 
-  function handleOnSubmit(e) {
-    e.preventDefault();
-    dispatch({ type: "ADD", value: text });
-    setText("");
-  }
+    return (
+        <form id="todo-form" onSubmit={handleSubmit}>
+            <label htmlFor="todo-input">Title</label>
+            <input type="text" id="todo-input" ref={inpRef}/>
+            <button type="submit">Add To-Do</button>
+        </form>
+    )
+}
 
-  function handleDelete(id) {
-    const newData = state.todos.filter((e, i) => e.id !== id);
-    dispatch({ type: "DELETE", data: newData });
-  }
-
-  return (
-    <>
-      <form id="todo-form" onSubmit={(e) => handleOnSubmit(e)}>
-        <input
-          type="text"
-          id="todo-input"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        <button className="addBtn">Add</button>
-      </form>
-      <div className="todoList">
-        {state.todos.map((e, i) => (
-          <Todo key={e.id} {...e} handleDelete={handleDelete} />
-        ))}
-      </div>
-    </>
-  );
-};
-
-export { AddTodo };
+export { AddTodo }
